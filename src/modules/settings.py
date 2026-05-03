@@ -20,7 +20,7 @@ class Settings:
     brake_deadzone: int = 50
     pedal_value_max: int = 255
     brake_full_force_at: int = 248  # ~98%; jumps straight to force 255
-    throttle_full_force_at: int = 255  # %100; jumps straight to force 255
+    throttle_full_force_at: int = 250  # ~100%; jumps straight to force 255
 
     # --- Brake (left trigger): exponential ramp baseline -> full press ---
     # Baseline is ALWAYS held (no off()) so the trigger never "machine-guns"
