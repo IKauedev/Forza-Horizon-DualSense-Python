@@ -40,7 +40,7 @@ class Settings:
     abs_slip_ratio_threshold: float = 1.0
     abs_combined_slip_threshold: float = 1.0
     abs_freq: int = 10
-    abs_amp: int = 10
+    abs_amp: int = 20
 
     # --- Throttle (right trigger): exponential ramp baseline -> full press ---
     # Kept softer than the brake — a real gas pedal has very little resistance
