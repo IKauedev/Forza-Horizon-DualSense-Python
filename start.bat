@@ -22,10 +22,17 @@ if errorlevel 1 (
 )
 
 cd /d "%~dp0src"
-uv run main.py
-if %errorlevel% neq 0 (
-    echo.
-    echo Application exited with error code %errorlevel%.
+
+if "%~1"=="" (
+    uv run main.py
+    if !errorlevel! neq 0 (
+        echo.
+        echo Application exited with error code !errorlevel!.
+        pause
+    )
     pause
+) else (
+    :: Steam Start Minimized
+    start "FH5 DualSense" /MIN uv run main.py
+    %*
 )
-pause

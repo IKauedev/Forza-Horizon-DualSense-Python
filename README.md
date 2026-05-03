@@ -155,14 +155,30 @@ Open Forza Horizon 5 → **Settings → HUD and Gameplay**, scroll to the bottom
 
 ## ▶️ Run it
 
+### Option A: Manual Launch
+Run the script from the terminal:
 ```bash
 cd src
 uv run main.py
 ```
 
+Or just double-click the `start.bat` file. 
+
 You should hear a brief startup pulse on both triggers — that confirms HID writes are landing on the controller. After that, fire up FH5 and start driving.
 
 > Run the script **before or while FH5 is loading**. Steam Input must be active for the controller; if you use HidHide, allowlist `python.exe`.
+
+### Option B: Start via Steam (Auto Launch)
+You can configure Steam to launch the DualSense script automatically in the background whenever you press **Play** on Forza Horizon 5.
+
+1. Open Steam, right-click **Forza Horizon 5** in your Library -> **Properties**.
+2. In the **General** tab, scroll down to **Launch Options**.
+3. Paste the following line exactly (update the path to wherever you downloaded this project):
+   ```text
+   cmd /c "start /MIN /D C:\Your\Path\To\Forza-Horizon-5-DualSense-Python\src uv run main.py" && %command%
+   ```
+
+Now, whenever you start the game from Steam, the Python script will quietly launch in a minimized window just before the game opens. No `.bat` files needed!
 
 ---
 
