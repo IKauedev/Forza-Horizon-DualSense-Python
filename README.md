@@ -297,6 +297,7 @@ src/
 | Triggers feel too stiff at light press | Lower the relevant baseline force, or raise the relevant `curve` for a softer initial press. |
 | Brake "machine-guns" / buzzes when barely pressed | This was the original off↔rigid jitter — already fixed by the always-held baseline. If it returns, raise the deadzone or the baseline force. |
 | No vibration on gear shift | Make sure the car is moving faster than 3 km/h and the change is between valid gears. Neutral/invalid gear transitions are intentionally ignored. |
+| Console hangs on an empty window after the startup pulse | On some Windows/Python combinations the Textual TUI can fail to render even though the controller connection worked. Start from a terminal with `cd src && uv run main.py --no-tui` to use normal console logs instead. |
 
 ---
 
