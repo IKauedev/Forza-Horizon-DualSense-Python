@@ -143,8 +143,9 @@ class TriggerAnimation:
 
     @staticmethod
     def _pedal_force(value, deadzone, baseline, max_force, curve, full_force_at, value_max):
-        span = max(full_force_at - deadzone, 1)
-        ratio = min(max((value - deadzone) / span, 0.0), 1.0)
+        if value >= full_force_at:
+            return RAW_MAX
+        ratio = (value - deadzone) / max(value_max - deadzone, 1)
         return baseline + (max_force - baseline) * (ratio ** curve)
 
     @staticmethod

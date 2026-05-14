@@ -4,14 +4,18 @@
 # Asks before updating to a newer version.
 set -e
 
+GAME_ARGC=$#
+
 pause_exit() {
     local code=$?
     echo
     echo "App exited with code $code."
-    read -r -p "Press Enter to close this window..." _ || true
+    if [ "$GAME_ARGC" -eq 0 ]; then
+        read -r -p "Press Enter to close this window..." _ || true
+    fi
     exit "$code"
 }
-trap pause_exit EXIT
+trap 'pause_exit' EXIT
 
 REPO="HamzaYslmn/Forza-Horizon-DualSense-Python"
 ROOT="$(cd "$(dirname "$0")" && pwd)"

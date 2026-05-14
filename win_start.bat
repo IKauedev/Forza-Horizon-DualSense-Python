@@ -111,6 +111,8 @@ uv run main.py
 set "EXITCODE=%ERRORLEVEL%"
 echo.
 echo App exited with code %EXITCODE%.
-echo Press Enter to close this window...
-pause >nul
+if not defined GAME_CMD (
+    echo Press Enter to close this window...
+    pause >nul
+)
 endlocal
