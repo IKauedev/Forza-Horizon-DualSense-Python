@@ -47,7 +47,7 @@ if /I "!ans!"=="n" goto :run
 
 :install
 set "ZIP=%ROOT%fh5ds-!LATEST!.zip"
-set "TMP=%ROOT%_extract"
+set "EXTRACT=%ROOT%_extract"
 if "!SOURCE!"=="branch" (
     set "DLURL=https://github.com/%REPO%/archive/refs/heads/!LATEST!.zip"
 ) else (
@@ -62,19 +62,19 @@ if errorlevel 1 (
     goto :run
 )
 
-if exist "%TMP%" rmdir /s /q "%TMP%"
+if exist "%EXTRACT%" rmdir /s /q "%EXTRACT%"
 echo Extracting...
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-    "Expand-Archive -LiteralPath '%ZIP%' -DestinationPath '%TMP%' -Force"
+    "Expand-Archive -LiteralPath '%ZIP%' -DestinationPath '%EXTRACT%' -Force"
 
 REM Move extracted top-level folder to ./app
 if exist "%APP%" rmdir /s /q "%APP%"
-for /d %%d in ("%TMP%\*") do (
+for /d %%d in ("%EXTRACT%\*") do (
     move "%%d" "%APP%" >nul
     goto :moved
 )
 :moved
-rmdir /s /q "%TMP%"
+rmdir /s /q "%EXTRACT%"
 del "%ZIP%"
 > "%VERSION_FILE%" echo !LATEST!
 echo Installed !LATEST!.

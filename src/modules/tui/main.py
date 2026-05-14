@@ -247,7 +247,8 @@ class TriggerTUI(App):
         self._status_thread.start()
 
     def _refresh_status(self) -> None:
-        ds_state = "connected" if (self._ds and self._ds.connected) else "waiting"
+        connected = bool(self._ds and self._ds.connected)
+        ds_state = "[bold green]connected[/]" if connected else "[bold red]waiting[/]"
         bits = [
             f"DualSense: {ds_state}",
             f"Logs: {self._current_level_name()}",

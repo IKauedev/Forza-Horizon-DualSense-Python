@@ -46,7 +46,7 @@ install_release() {
     local tag="$1"
     local kind="$2"
     local zip="$ROOT/fh5ds-$tag.zip"
-    local tmp="$ROOT/_extract"
+    local extract="$ROOT/_extract"
     local url
     if [ "$kind" = "branch" ]; then
         url="https://github.com/$REPO/archive/refs/heads/$tag.zip"
@@ -59,16 +59,16 @@ install_release() {
     else
         wget -q "$url" -O "$zip"
     fi
-    rm -rf "$tmp"
-    mkdir -p "$tmp"
+    rm -rf "$extract"
+    mkdir -p "$extract"
     if need unzip; then
-        unzip -q "$zip" -d "$tmp"
+        unzip -q "$zip" -d "$extract"
     else
-        python3 -c "import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$zip" "$tmp"
+        python3 -c "import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$zip" "$extract"
     fi
     rm -rf "$APP"
-    mv "$tmp"/*/ "$APP"
-    rm -rf "$tmp" "$zip"
+    mv "$extract"/*/ "$APP"
+    rm -rf "$extract" "$zip"
     echo "$tag" > "$VERSION_FILE"
     echo "Installed $tag."
 }

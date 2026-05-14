@@ -88,82 +88,30 @@ The chain lives in [TriggerAnimation._throttle()](src/modules/dualsense/triggers
 
 ## 🛠️ Installation
 
-**Requirements:** Windows 10/11 or Linux, Python 3.10+, and a DualSense controller (USB or Bluetooth).
+**Requirements:** Windows 10/11 or Linux, and a DualSense controller (USB or Bluetooth).
 
-### Option 1: Click-and-run launcher
+### Click and run
 
-Download `win_start.bat` (Windows) or `linux_start.sh` (Linux/macOS) from the [latest GitHub release](https://github.com/HamzaYslmn/Forza-Horizon-DualSense-Python/releases/latest), drop it into an empty folder, and double-click it.
+1. Go to the [latest release](https://github.com/HamzaYslmn/Forza-Horizon-DualSense-Python/releases/latest).
+2. Download **`win_start.bat`** (Windows) or **`linux_start.sh`** (Linux).
+3. Put it in any empty folder and double-click it.
 
-The launcher does everything for you:
+That's it. The launcher takes care of everything: downloads the app into `./app/` next to itself, installs `uv` and Python if needed, and runs the TUI. Re-running it later checks for updates and asks before installing them. The window stays open on exit so any error stays on screen.
 
-- On first run it downloads the latest release into `./app/` next to the script.
-  If no release has been published yet, it falls back to the `main` branch.
-- On later runs it asks before updating to a newer release.
-- It installs `uv` if missing, then starts the app.
-- When the app exits, the window stays open ("Press Enter to close...") so any error message stays on screen.
+> Linux users: also install `libhidapi` (`sudo apt install libhidapi-hidraw0` / `sudo pacman -S hidapi` / `sudo dnf install hidapi`) and the udev rule from `app/packaging/linux/70-dualsense.rules` so non-root users can talk to the controller. Then unplug/replug or re-pair once.
 
-Use this option if you just want to launch the app on Windows or Linux.
-
-### Option 2: Manual installation
-
-Clone the repository:
+<details>
+<summary>Manual install (developers)</summary>
 
 ```bash
 git clone https://github.com/HamzaYslmn/Forza-Horizon-DualSense-Python
-cd Forza-Horizon-DualSense-Python
-```
-
-Install `uv` if you do not already have it:
-
-```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
-
-Or install it with pip:
-
-```bash
-python -m pip install uv
-```
-
-Then install/sync the Python environment from the `src` folder:
-
-```bash
-cd src
+cd Forza-Horizon-DualSense-Python/src
 uv sync
+uv run main.py
 ```
 
-### Linux
-
-Works under both **native Linux** (FH5 via Proton on Steam) and a Linux box receiving telemetry over the network.
-
-1. Install the system dependency for `hidapi`:
-
-   ```bash
-   # Debian / Ubuntu
-   sudo apt install libhidapi-hidraw0
-
-   # Arch
-   sudo pacman -S hidapi
-
-   # Fedora
-   sudo dnf install hidapi
-   ```
-2. Install the udev rule so non-root users can talk to the controller:
-
-   ```bash
-   sudo cp packaging/linux/70-dualsense.rules /etc/udev/rules.d/
-   sudo udevadm control --reload-rules
-   sudo udevadm trigger
-   ```
-   Then unplug/replug (USB) or re-pair (Bluetooth) the controller once.
-3. Launch:
-
-   ```bash
-   chmod +x linux_start.sh
-   ./linux_start.sh
-   ```
-
-   `linux_start.sh` downloads/updates the latest release into `./app/`, installs `uv` if needed, then runs the app.
+Install `uv` first if needed: `pip install uv` or [astral.sh/uv](https://astral.sh/uv/).
+</details>
 
 ---
 
@@ -187,14 +135,7 @@ Open Forza Horizon → **Settings → HUD and Gameplay**, scroll to the bottom:
 
 ## ▶️ Run it
 
-### Option A: Manual Launch
-Run the script from the terminal:
-```bash
-cd src
-uv run main.py
-```
-
-Or just double-click the `win_start.bat` file. 
+Double-click `win_start.bat` (Windows) or `linux_start.sh` (Linux). For developers, from the `src/` folder: `uv run main.py`.
 
 You should hear a brief startup pulse on both triggers — that confirms HID writes are landing on the controller. After that, fire up FH5 and start driving.
 
