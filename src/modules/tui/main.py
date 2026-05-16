@@ -24,6 +24,7 @@ from textual.widgets import (
 
 from modules import dualsense, loop, preferences, udplistener
 from modules.dualsense.triggers import off, vibration
+from modules.preferences import _version
 from modules.update_check import log_latest_commit_age
 
 HAPTIC_FREQ_HZ = 40
@@ -164,7 +165,9 @@ class SettingsPage(VerticalScroll):
 class TriggerTUI(App):
     CSS = """
     Screen { background: $surface; }
-    #status { dock: top; height: 1; padding: 0 2; background: $boost; text-align: center; }
+    #topbar { dock: top; height: 1; background: $boost; }
+    #status { width: 1fr; height: 1; padding: 0 2; text-align: center; }
+    #version { width: auto; height: 1; padding: 0 2; text-align: right; color: $text-muted; }
 
     TabbedContent { height: 1fr; }
     Tabs { align-horizontal: center; }
@@ -207,7 +210,9 @@ class TriggerTUI(App):
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
-        yield Static("", id="status")
+        with Horizontal(id="topbar"):
+            yield Static("", id="status")
+            yield Static(f"v{_version() or '?'}", id="version")
         with TabbedContent(initial="tab-controls"):
             with TabPane("Controls", id="tab-controls"):
                 yield ControlsPage(self.settings)
