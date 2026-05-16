@@ -66,6 +66,12 @@ Strict priority — **only one effect plays at a time**, so animations never fig
 
 The chain lives in [TriggerAnimation._throttle()](src/modules/dualsense/triggers.py) — about 20 lines, easy to extend.
 
+> ⚠️ **Rev limiter caveat:** the buzz fires based on `rpm / max_rpm` as a
+> percentage, not at a fixed RPM. Different cars hit their redline at
+> different fractions of telemetry `max_rpm`, so the `rev_limit_ratio`
+> setting may need to be fine-tuned per vehicle to feel right. Sorry about
+> that — it's a limitation of how Forza reports the redline.
+
 ---
 
 ## ⚡ How it works
