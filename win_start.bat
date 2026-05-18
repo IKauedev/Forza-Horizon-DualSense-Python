@@ -1,11 +1,21 @@
 @echo off
 REM FH DualSense - Windows launcher (zuv).
-REM Bundle self-updates from GitHub Releases on each run; ZUV_NO_UPDATE=1 disables.
-setlocal
+REM Args starting with -- forward to fhds.zuv.py (e.g. --prerelease, --headless).
+REM Remaining args = optional Steam wrapper game cmd (e.g. start "" steam://rungameid/1551360).
+setlocal EnableDelayedExpansion
 set "DIR=%~dp0"
 set "BUNDLE=%DIR%fhds.zuv.py"
-set "GAME_CMD=%*"
+set "FLAGS="
+set "GAME="
 
+:argloop
+if "%~1"=="" goto ready
+set "a=%~1"
+if "!a:~0,2!"=="--" (set "FLAGS=!FLAGS! %1") else (set "GAME=!GAME! %1")
+shift
+goto argloop
+
+:ready
 if not exist "%BUNDLE%" (
     echo Could not find %BUNDLE%.
     echo Download fhds.zuv.py from https://github.com/HamzaYslmn/Forza-Horizon-DualSense-Python/releases/latest
@@ -21,10 +31,8 @@ if errorlevel 1 (
     where uv >nul 2>nul || (echo uv not on PATH - restart terminal. & pause & exit /b 1)
 )
 
-REM Optional Steam wrapper: pass `start "" steam://rungameid/1551360` (or any cmd)
-REM as launcher args. The game starts; fhds runs until the game exits.
-if defined GAME_CMD start "" %GAME_CMD%
+if defined GAME start "" %GAME%
 
-uv run "%BUNDLE%"
-if not defined GAME_CMD pause >nul
+uv run "%BUNDLE%" %FLAGS%
+if not defined GAME pause >nul
 endlocal

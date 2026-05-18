@@ -35,8 +35,16 @@ if [ "$(uname -s)" = "Linux" ] && [ ! -f "$RULE_DST" ]; then
     esac
 fi
 
-# Optional Steam wrapper: pass `steam steam://rungameid/1551360` (or any cmd)
-# as launcher args. The game starts; fhds runs until the game exits.
-if [ "$#" -gt 0 ]; then "$@" & fi
+# Args starting with -- forward to fhds.zuv.py (--prerelease, --headless, ...).
+# Remaining args = optional Steam wrapper game cmd.
+FLAGS=(); GAME=()
+for a in "$@"; do
+    case "$a" in
+        --*) FLAGS+=("$a") ;;
+        *) GAME+=("$a") ;;
+    esac
+done
 
-exec uv run "$BUNDLE"
+[ ${#GAME[@]} -gt 0 ] && "${GAME[@]}" &
+
+exec uv run "$BUNDLE" "${FLAGS[@]}"

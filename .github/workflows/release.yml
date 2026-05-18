@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  DEV_TAG: v999.0.0-dev
+  DEV_TAG: v999.0.0
 
 jobs:
   publish:
