@@ -60,7 +60,24 @@ if __name__ == "__main__":
     args = p.parse_args()
 
     settings = Settings()
-    preferences.load(settings)
+    try:
+        preferences.load(settings)
+    except preferences.PreferencesError as e:
+        print(f"\n{e}", file=sys.stderr)
+        print(f"Reset {preferences.PATH.name} to defaults? "
+              f"(a backup will be saved as {preferences.PATH.name}.bak) [y/N]: ",
+              end="", file=sys.stderr, flush=True)
+        answer = ""
+        try:
+            answer = input().strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            pass
+        if answer not in ("y", "yes"):
+            print("Aborted. Please fix or delete the file manually, then retry.",
+                  file=sys.stderr)
+            sys.exit(1)
+        preferences.reset_file()
+        preferences.load(settings)
     if args.host is not None: settings.udp_host = args.host
     if args.port is not None: settings.udp_port = args.port
 
