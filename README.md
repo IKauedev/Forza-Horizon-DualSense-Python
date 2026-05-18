@@ -121,6 +121,12 @@ In Forza Horizon, open **Settings → HUD and Gameplay** and scroll to the botto
 1. Open **Settings → Advanced Controls**.
 2. Find the **Vibration** option and enable it.
 
+### DualSense software:
+For best results, install the official **PlayStation® Accessories** software:
+- Download: [PlayStation® Accessories](https://controller.dl.playstation.net/controller/lang/en/2100004.html)
+
+This ensures your DualSense firmware is up to date for windows.
+
 > ℹ️ **About Adaptive Triggers:** Steam doesn't support DualSense adaptive triggers for this game. That's what **this app** does — it adds realistic trigger feedback (brake resistance, engine feedback, ABS pulses, gear thumps, rev limiter buzz) on top of the rumble that Steam provides.
 
 ---
