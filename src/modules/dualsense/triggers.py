@@ -93,16 +93,16 @@ class TriggerAnimations:
     """Every trigger effect lives here. Methods return an HID frame or None."""
 
     def __init__(self):
-        self._prev_gear = 0
+        self._prev_gear = None
         self._shift_until = 0.0
         self._rev_until = 0.0
 
     def arm_shift(self, t, s, now):
-        gear, speed = t["gear"], t["speed"]
-        if (self._prev_gear > 0 and gear > 0
-                and gear != self._prev_gear and speed > 3.0):
+        gear = t["gear"]
+        if self._prev_gear is not None and gear != self._prev_gear:
             self._shift_until = now + s.gear_shift_duration_ms / 1000.0
         self._prev_gear = gear
+        
 
     def shift_burst(self, s, now, pedal, wall_engage_at):
         if now >= self._shift_until:
