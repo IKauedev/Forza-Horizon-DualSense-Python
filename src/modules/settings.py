@@ -79,7 +79,12 @@ class Settings:
 
 
 
-    # Reconnect interval when the controller is missing or disconnects.
+    # Auto-reconnect to the controller when it's missing or drops. Disabled by
+    # default for HidHide compatibility — re-enumerating HID devices while a
+    # HidHide cloak toggles can leave the OS holding a dead handle. Enable from
+    # the Settings tab if you want USB unplug/replug to recover without
+    # restarting the app.
+    enable_reconnect: bool = False
     reconnect_interval_s: float = 5.0
 
     # Auto-exit when game closes (Windows + Linux/Proton). Telemetry-lost is a fallback for Task Manager kills.

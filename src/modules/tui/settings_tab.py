@@ -3,7 +3,7 @@ import logging
 
 from textual.app import ComposeResult
 from textual.containers import Horizontal, VerticalScroll
-from textual.widgets import Button, Input, Label
+from textual.widgets import Button, Input, Label, Switch
 
 from modules import preferences
 
@@ -46,11 +46,13 @@ SETTING_SECTIONS = [
     ]),
     ("Misc", [
         ("startup_pulse_force",  "Startup pulse force",    0, 255),
+        ("enable_reconnect",     "Auto-reconnect controller (disable for HidHide)", None, None),
         ("reconnect_interval_s", "Reconnect interval (s)", 0.1, 60.0),
     ]),
 ]
 
-SETTING_RANGES = {a: (lo, hi) for _, fields in SETTING_SECTIONS for a, _, lo, hi in fields}
+SETTING_RANGES = {a: (lo, hi) for _, fields in SETTING_SECTIONS
+                  for a, _, lo, hi in fields if lo is not None and hi is not None}
 
 
 def _fmt_range(lo, hi):
@@ -66,6 +68,7 @@ class SettingsTab(VerticalScroll):
     SettingsTab .row { height: 3; width: 1fr; align-vertical: middle; padding: 0 1; }
     SettingsTab .row Label { width: 1fr; height: 3; content-align: left middle; }
     SettingsTab .row Input { width: 16; min-width: 10; max-width: 20; height: 3; }
+    SettingsTab .row Switch { margin-right: 2; }
     SettingsTab #reset-settings { width: 1fr; margin: 2 0 1 0; }
     """
 
@@ -80,11 +83,26 @@ class SettingsTab(VerticalScroll):
                 value = getattr(self.settings, attr, None)
                 if value is None:
                     continue
-                input_type = "integer" if isinstance(value, int) and not isinstance(value, bool) else "number"
+                if isinstance(value, bool):
+                    with Horizontal(classes="row"):
+                        yield Switch(value=value, id=attr)
+                        yield Label(label)
+                    continue
+                input_type = "integer" if isinstance(value, int) else "number"
                 with Horizontal(classes="row"):
                     yield Label(f"{label} ({_fmt_range(lo, hi)})")
                     yield Input(value=str(value), id=f"set-{attr}", type=input_type)
         yield Button("Reset to defaults", id="reset-settings", variant="error")
+
+    def on_switch_changed(self, event: Switch.Changed):
+        attr = event.switch.id
+        if not attr or not hasattr(self.settings, attr):
+            return
+        if getattr(self.settings, attr) == event.value:
+            return
+        setattr(self.settings, attr, event.value)
+        preferences.save(self.settings)
+        log.info("%s = %s", attr, event.value)
 
     def on_input_submitted(self, event: Input.Submitted):
         self._commit(event.input, strict=True)

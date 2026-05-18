@@ -96,6 +96,7 @@ class DualSense:
         startup_pulse_force: int = 180,
         enable_startup_pulse: bool = True,
         reconnect_interval_s: float = 5.0,
+        enable_reconnect: bool = False,
     ):
         self.dev = None
         self.dev_path = None
@@ -111,6 +112,8 @@ class DualSense:
         self._pulse_force = startup_pulse_force
         self._enable_startup_pulse = enable_startup_pulse
         self._reconnect_interval = reconnect_interval_s
+        self._enable_reconnect = enable_reconnect
+        self._attempted = False
         self._open_hinted = False
         self._waiting_hinted = False
         self._last_attempt = -1e9
@@ -163,7 +166,10 @@ class DualSense:
         info = _find_gamepad()
         if not info:
             if not self._waiting_hinted:
-                log.info("Waiting for DualSense — retrying every %.0fs", self._reconnect_interval)
+                if self._enable_reconnect:
+                    log.info("Waiting for DualSense — retrying every %.0fs", self._reconnect_interval)
+                else:
+                    log.info("Waiting for DualSense — single attempt (auto-reconnect disabled).")
                 self._waiting_hinted = True
             return False
         try:
@@ -206,8 +212,13 @@ class DualSense:
         self.dev_path = None
         if was_connected:
             suffix = f" ({reason})" if reason else ""
-            log.warning("DualSense disconnected%s — retrying every %.0fs",
-                        suffix, self._reconnect_interval)
+            if self._enable_reconnect:
+                log.warning("DualSense disconnected%s — retrying every %.0fs",
+                            suffix, self._reconnect_interval)
+            else:
+                log.warning("DualSense disconnected%s — auto-reconnect is disabled "
+                            "(enable it in the Settings tab to recover automatically).",
+                            suffix)
 
     # MARK: I/O thread — reconnect when missing, write when dirty, watchdog on idle input
     def _io(self):
@@ -216,9 +227,20 @@ class DualSense:
 
             # --- Disconnected: throttle reconnect attempts ---
             if not self.connected:
-                if now - self._last_attempt >= self._reconnect_interval:
-                    self._last_attempt = now
-                    self._try_connect()  # logs success / waiting / open-failure itself
+                # Skip retries when reconnect is disabled — the initial connect
+                # always runs once so the user can still get a controller at
+                # startup, but subsequent enumeration is what trips HidHide.
+                if self._enable_reconnect or not self._attempted:
+                    if now - self._last_attempt >= self._reconnect_interval:
+                        self._last_attempt = now
+                        first = not self._attempted
+                        self._attempted = True
+                        self._try_connect()  # logs success / waiting / open-failure itself
+                        if not self.connected and first and not self._enable_reconnect:
+                            log.warning(
+                                "DualSense not found and auto-reconnect is disabled — "
+                                "enable it in the Settings tab to keep retrying."
+                            )
                 self._wake.wait(0.5)
                 self._wake.clear()
                 continue
