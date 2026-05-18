@@ -9,10 +9,10 @@ permissions:
   contents: write
 
 env:
-  # Rolling prerelease tag re-uploaded on every push to `dev`. The tag itself
-  # is just `dev` (not a version number); the bundle inside still carries the
-  # real version from pyproject.toml. `--prerelease` users auto-track it.
-  DEV_TAG: dev
+  # Rolling prerelease tag re-uploaded on every push to `dev`. v999.0.0-dev
+  # keeps it pinned to the top of the /tags listing (highest semver wins),
+  # well above any real stable v1.x.y. `--prerelease` users auto-track it.
+  DEV_TAG: v999.0.0-dev
 
 jobs:
   publish:
@@ -68,11 +68,24 @@ jobs:
             --update-repo HamzaYslmn/Forza-Horizon-DualSense-Python
           cp win_start.bat linux_start.sh packaging/linux/70-dualsense.rules release/
 
+      - name: Compose release name
+        if: steps.parse.outputs.tag && env.skip != '1'
+        id: name
+        run: |
+          TAG="${{ steps.parse.outputs.tag }}"
+          if [[ "$TAG" == "v999.0.0-dev" ]]; then
+            echo "title=🧪 dev — Rolling Test Build" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ steps.parse.outputs.prerelease }}" == "true" ]]; then
+            echo "title=${TAG} — Release Candidate" >> "$GITHUB_OUTPUT"
+          else
+            echo "title=${TAG}" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: softprops/action-gh-release@v2
         if: steps.parse.outputs.tag && env.skip != '1'
         with:
           tag_name: ${{ steps.parse.outputs.tag }}
-          name: ${{ steps.parse.outputs.tag }}
+          name: ${{ steps.name.outputs.title }}
           prerelease: ${{ steps.parse.outputs.prerelease == 'true' }}
           generate_release_notes: true
           body: |
