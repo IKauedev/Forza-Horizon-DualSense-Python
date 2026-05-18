@@ -12,6 +12,7 @@ if sys.platform.startswith("linux"):
 else:
     import hid
 
+from . import hidhide
 from .triggers import M_RIGID, off
 
 log = logging.getLogger("fhds.dualsense")
@@ -118,6 +119,10 @@ class DualSense:
         # the nonblocking read returns empty for `_input_idle_timeout`.
         self._input_idle_timeout = 3.0
         self._last_input_at = 0.0
+        # HidHide-persistent: once True, _disconnect() is a no-op and the I/O
+        # loop never reconnects. Latched on first successful connect when
+        # HidHide is detected; never cleared.
+        self._persistent = False
 
     @property
     def connected(self) -> bool:
@@ -173,6 +178,9 @@ class DualSense:
         self._open_hinted = self._waiting_hinted = False
         self._last_input_at = time.monotonic()
         log.info("DualSense connected (%s)", "BT" if self.lay["bt"] else "USB")
+        if not self._persistent and hidhide.is_present():
+            self._persistent = True
+            log.info("HidHide detected — reconnect disabled for this session")
 
         if self._enable_startup_pulse:
             pulse = (M_RIGID, (0, self._pulse_force))
@@ -184,6 +192,9 @@ class DualSense:
         return True
 
     def _disconnect(self, reason: str = ""):
+        # HidHide-persistent: keep the handle, ignore transient errors forever.
+        if self._persistent and self._running:
+            return
         was_connected = self.dev is not None
         if was_connected:
             self._safe_write(self._build(off(), off()))
@@ -212,6 +223,12 @@ class DualSense:
                 self._wake.clear()
                 continue
 
+            # HidHide-persistent mode: once we've connected and HidHide is on
+            # the system, never tear the handle down — HidHide can cloak the
+            # device mid-session and the OS link stays put. Treat read/write
+            # hiccups as transient and skip the idle-input watchdog.
+            persistent = self._persistent
+
             # --- Connected: drain one input report for the liveness watchdog.
             # timeout_ms=0 forces a truly nonblocking read — set_nonblocking()
             # is unreliable on Windows Bluetooth, where read() would otherwise
@@ -219,11 +236,13 @@ class DualSense:
             try:
                 data = self.dev.read(self.lay["size"], timeout_ms=0)
             except OSError as e:
-                self._disconnect(f"read failed: {e}")
-                continue
+                if not persistent:
+                    self._disconnect(f"read failed: {e}")
+                    continue
+                data = None
             if data:
                 self._last_input_at = now
-            elif now - self._last_input_at >= self._input_idle_timeout:
+            elif not persistent and now - self._last_input_at >= self._input_idle_timeout:
                 self._disconnect(f"no input for {self._input_idle_timeout:.0f}s")
                 continue
 
@@ -235,9 +254,11 @@ class DualSense:
                 try:
                     n = self.dev.write(self._build(left, right))
                 except Exception as e:
-                    self._disconnect(f"write failed: {e}")
-                    continue
-                if n is not None and n <= 0:
+                    if not persistent:
+                        self._disconnect(f"write failed: {e}")
+                        continue
+                    n = None
+                if not persistent and n is not None and n <= 0:
                     self._disconnect(f"write returned {n}")
                     continue
 
