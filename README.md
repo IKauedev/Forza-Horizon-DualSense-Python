@@ -123,7 +123,7 @@ In Forza Horizon, open **Settings → HUD and Gameplay** and scroll to the botto
 
 ### DualSense software:
 For best results, install the official **PlayStation® Accessories** software:
-- Download: [PlayStation® Accessories](https://controller.dl.playstation.net/controller/lang/en/2100004.html)
+- Download: [PlayStation® Accessories](https://fwupdater.dl.playstation.net/fwupdater/PlayStationAccessoriesInstaller.exe)
 
 This ensures your DualSense firmware is up to date for windows.
 
