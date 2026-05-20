@@ -248,9 +248,13 @@ Built by **[HamzaYslmn](https://github.com/HamzaYslmn)**.
 
 - **[BeaudinSan](https://github.com/BeaudinSan)** — thank you for your incredibly generous support! It truly means a lot to me. 
 
+- **[dotcom](https://github.com/a0938670973-dotcom)** — thank you for your Cake!
+
 - **[BambinoPinguino](https://github.com/BambinoPinguino)** — thank you for your Tea!
 
 - **[Ereldun](https://steamcommunity.com/)** — thank you for your Coffee!
+
+- **[Clevens克林](https://steamcommunity.com/)** — thank you for your Candy!
 
 ---
 *Built for an immersive racing experience*
