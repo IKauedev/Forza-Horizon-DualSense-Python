@@ -23,6 +23,7 @@ STRINGS = {
 
     # --- controls tab ---
     "Brake stiffness": "ブレーキ剛性",
+    "Static brake wall": "静的ブレーキウォール",
     "Handbrake stiffness bonus": "ハンドブレーキ剛性ボーナス",
     "ABS rumble": "ABS 振動",
     "Shift thump": "シフトショック",
@@ -42,6 +43,8 @@ STRINGS = {
     "Baseline force": "基準フォース",
     "Max force": "最大フォース",
     "Curve": "カーブ",
+    "Static wall at": "静的ウォール位置",
+    "Static wall force": "静的ウォール強度",
     "Handbrake bonus": "ハンドブレーキボーナス",
     "Brake threshold": "ブレーキしきい値",
     "Min speed (km/h)": "最低速度 (km/h)",

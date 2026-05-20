@@ -28,6 +28,9 @@ class Settings:
     brake_curve: float = 5.0                  # parabolic: light through mid travel, sharply firm near the wall
     brake_wall_engage_at: int = 250           # accel byte to switch to firmware wall
     brake_wall_release_at: int = 200          # accel byte to release the wall back to rigid curve (hysteresis)
+    enable_brake_static_wall: bool = False    # Optional extra static wall
+    brake_static_wall_at: int = 128           # brake byte where the static wall sits
+    brake_static_wall_force: int = 255        # how hard the static wall resists (0-255)
 
     # Handbrake bonus: flat extra force when handbrake is engaged.
     enable_handbrake_bonus: bool = True

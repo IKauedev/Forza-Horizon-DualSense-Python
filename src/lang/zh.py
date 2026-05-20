@@ -23,6 +23,7 @@ STRINGS = {
 
     # --- controls tab ---
     "Brake stiffness": "刹车阻力",
+    "Static brake wall": "静态刹车墙",
     "Handbrake stiffness bonus": "手刹阻力加成",
     "ABS rumble": "ABS 振动",
     "Shift thump": "换挡冲击",
@@ -42,6 +43,8 @@ STRINGS = {
     "Baseline force": "基础力度",
     "Max force": "最大力度",
     "Curve": "曲线",
+    "Static wall at": "静态墙位置",
+    "Static wall force": "静态墙力度",
     "Handbrake bonus": "手刹加成",
     "Brake threshold": "刹车阈值",
     "Min speed (km/h)": "最低速度 (km/h)",

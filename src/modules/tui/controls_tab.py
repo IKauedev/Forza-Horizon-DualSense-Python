@@ -10,17 +10,19 @@ from modules import preferences
 
 log = logging.getLogger("fhds")
 
+# Listed highest priority first, matching the Controller's effect precedence.
 TRIGGER_CONTROLS = [
     ("L2", [
-        ("enable_brake_resistance", "Brake stiffness"),
-        ("enable_handbrake_bonus",  "Handbrake stiffness bonus"),
-        ("enable_abs",              "ABS rumble"),
-        ("enable_gear_shift_brake", "Shift thump"),
+        ("enable_gear_shift_brake",  "Shift thump"),
+        ("enable_abs",               "ABS rumble"),
+        ("enable_brake_static_wall", "Static brake wall"),
+        ("enable_brake_resistance",  "Brake stiffness"),
+        ("enable_handbrake_bonus",   "Handbrake stiffness bonus"),
     ]),
     ("R2", [
-        ("enable_throttle_resistance", "Throttle stiffness"),
-        ("enable_rev_limiter",         "Redline buzz"),
         ("enable_gear_shift",          "Shift thump"),
+        ("enable_rev_limiter",         "Redline buzz"),
+        ("enable_throttle_resistance", "Throttle stiffness"),
     ]),
 ]
 

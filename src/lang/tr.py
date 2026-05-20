@@ -23,6 +23,7 @@ STRINGS = {
 
     # --- controls tab ---
     "Brake stiffness": "Fren sertliği",
+    "Static brake wall": "Statik fren duvarı",
     "Handbrake stiffness bonus": "El freni sertlik bonusu",
     "ABS rumble": "ABS titreşimi",
     "Shift thump": "Vites darbesi",
@@ -42,6 +43,8 @@ STRINGS = {
     "Baseline force": "Taban kuvvet",
     "Max force": "Maks kuvvet",
     "Curve": "Eğri",
+    "Static wall at": "Statik duvar konumu",
+    "Static wall force": "Statik duvar gücü",
     "Handbrake bonus": "El freni bonusu",
     "Brake threshold": "Fren eşiği",
     "Min speed (km/h)": "Min hız (km/s)",

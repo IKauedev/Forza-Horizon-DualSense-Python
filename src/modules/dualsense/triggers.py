@@ -86,6 +86,21 @@ def build_wall(zones):
     n = max(1, min(9, int(zones)))
     return feedback([0] * (10 - n) + [8] * n)
 
+def build_brake_walls(static_at, force, wall_zones):
+    """End wall (top `wall_zones`) plus a static wall from brake byte `static_at` down.
+
+    From `static_at` to the bottom of travel every zone holds `force` (a 0-255 byte
+    mapped to strength) so the resistance never lightens again past the threshold; the
+    top `wall_zones` stay maxed as the end wall. Firmware-held, so a fast stab can't
+    skip it."""
+    n = max(1, min(9, int(wall_zones)))
+    strength = _amp_to_strength(force)
+    start = min(9, int(static_at) * 10 // 256)
+    zones = [strength if i >= start else 0 for i in range(10)]
+    for i in range(10 - n, 10):
+        zones[i] = 8
+    return feedback(zones)
+
 
 # --- Animations -----------------------------------------------------------
 
@@ -184,6 +199,9 @@ class Controller:
         pulse = self.anim.abs_pulse(t, s)
         if pulse:
             return pulse
+        # Optional extra static wall before the end wall; both held at once.
+        if s.enable_brake_static_wall:
+            return build_brake_walls(s.brake_static_wall_at, s.brake_static_wall_force, s.wall_zones)
         self._l2_in_wall = _wall_state(brake, self._l2_in_wall,
                                        s.brake_wall_engage_at, s.brake_wall_release_at)
         if self._l2_in_wall:
