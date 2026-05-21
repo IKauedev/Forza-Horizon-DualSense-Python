@@ -21,8 +21,7 @@ VENDOR_ID = 0x054C
 PRODUCT_IDS = (0x0CE6, 0x0DF2)  # DualSense, DualSense Edge
 
 # valid_flag0: 0x01 (R motor), 0x02 (L motor), 0x04 (R trigger), 0x08 (L trigger).
-# Some firmware needs motor bits set for trigger bits to be processed.
-TRIG_FLAGS = 0x01 | 0x02 | 0x04 | 0x08
+TRIG_FLAGS = 0x04 | 0x08
 
 # MARK: Layout maps — byte offsets per transport
 # vf1 = valid_flag1, psav = power_save_control
