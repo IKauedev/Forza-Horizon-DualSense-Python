@@ -195,8 +195,22 @@ class TriggerAnimations:
 class Controller:
     """Produces (L2, R2) frames per tick.
 
-    Priority L2: shift thump -> ABS rumble -> wall -> brake resistance.
-    Priority R2: shift thump -> rev limiter -> wheelspin buzz -> wall -> throttle ramp.
+    Each chain returns the FIRST non-empty effect; later items are masked.
+    Order is hand-tuned so the "loudest" / most informative effect wins.
+
+    L2 priority (top wins):
+        1. Gear shift thump    - one-shot burst on every shift, brief
+        2. ABS pulse           - tire lockup buzz under hard braking
+        3. Firmware end wall   - hard wall near 100% travel (hysteresis)
+        4. Static brake wall   - optional fixed wall at brake_static_wall_at
+        5. Brake resistance    - default rigid ramp 0..max_force
+
+    R2 priority (top wins):
+        1. Gear shift thump    - one-shot burst on every shift, brief
+        2. Rev limiter buzz    - rpm/max_rpm >= rev_limit_ratio
+        3. Wheelspin buzz      - driven wheels slipping (surface-aware)
+        4. Firmware end wall   - hard wall near 100% travel (hysteresis)
+        5. Throttle resistance - default rigid ramp 0..max_force
     """
 
     def __init__(self, settings):
@@ -215,36 +229,55 @@ class Controller:
 
     def L2(self, t, s, now):
         brake = t["brake"]
+
+        # 1. Gear shift thump - brief burst on shift, masks everything below
         if s.enable_gear_shift_brake:
             shift = self.anim.shift_burst(s, now, brake, s.brake_wall_engage_at)
             if shift:
                 return shift
+
+        # 2. ABS pulse - tire lockup under hard braking
         pulse = self.anim.abs_pulse(t, s)
         if pulse:
             return pulse
-        # Optional extra static wall before the end wall; both held at once.
-        if s.enable_brake_static_wall:
-            return build_brake_walls(s.brake_static_wall_at, s.brake_static_wall_force, s.wall_zones)
+
+        # 3. Firmware end wall - hard wall near 100% travel (latched via hysteresis)
         self._l2_in_wall = _wall_state(brake, self._l2_in_wall,
                                        s.brake_wall_engage_at, s.brake_wall_release_at)
         if self._l2_in_wall:
             return self.wall
+
+        # 4. Static brake wall - optional fixed wall mid-travel; replaces ramp
+        if s.enable_brake_static_wall:
+            return build_brake_walls(s.brake_static_wall_at, s.brake_static_wall_force, s.wall_zones)
+
+        # 5. Brake resistance - default rigid ramp
         return self.anim.brake_resistance(t, s)
 
     def R2(self, t, s, now):
         accel = t["accel"]
+
+        # 1. Gear shift thump - brief burst on shift, masks everything below
         if s.enable_gear_shift:
             shift = self.anim.shift_burst(s, now, accel, s.throttle_wall_engage_at)
             if shift:
                 return shift
+
+        # 2. Rev limiter buzz - rpm at/over rev_limit_ratio
         rev = self.anim.rev_buzz(t, s, now)
         if rev:
             return rev
+
+        # 3. Wheelspin buzz - driven wheels spinning, surface-aware amp/freq
         spin = self.anim.wheelspin_buzz(t, s, now)
         if spin is not None:
             return spin
+
+        # 4. Firmware end wall - hard wall near 100% travel (latched via hysteresis)
         self._r2_in_wall = _wall_state(accel, self._r2_in_wall,
                                        s.throttle_wall_engage_at, s.throttle_wall_release_at)
         if self._r2_in_wall:
             return self.wall
+
+        # 5. Throttle resistance - default rigid ramp
         return self.anim.throttle_ramp(t, s)
