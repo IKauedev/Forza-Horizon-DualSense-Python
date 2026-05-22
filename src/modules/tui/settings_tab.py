@@ -50,6 +50,9 @@ SETTING_SECTIONS = [
     ("Wheelspin buzz", [
         ("wheelspin_amp", "Buzz strength", 0, 255, ""),
     ]),
+    ("Idle buzz", [
+        ("idle_amp_high", "Idle strength", 0, 255, ""),
+    ]),
     ("Gear shift thump", [
         ("gear_shift_freq", "Thump speed (Hz)", 0, 255, ""),
         ("gear_shift_amp", "Thump strength", 0, 255, ""),

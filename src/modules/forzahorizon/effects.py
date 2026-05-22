@@ -102,8 +102,16 @@ class TriggerAnimations:
         return None
 
     def idle_buzz(self, t, s, now):
-        # Engine-idle sensation - empty stub
-        return None
+        # Software-oscillated idle: alternate vibrate amp every half-period for a chug feel.
+        if not s.enable_idle_buzz:
+            return None
+        if t["speed"] >= s.idle_max_speed_kmh:
+            return None
+        if not (1 <= t["accel"] <= s.idle_accel_max):
+            return None
+        loud = (now / s.idle_period_s) % 1.0 < 0.5
+        amp = s.idle_amp_high if loud else s.idle_amp_low
+        return vibrate(s.idle_freq, amp)
 
     def wheelspin_buzz(self, t, s, now):
         # R2 buzz when tires lose grip (wheelspin or drift).

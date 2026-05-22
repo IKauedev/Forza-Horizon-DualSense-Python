@@ -57,8 +57,8 @@ class Settings:
     # Vibrates when rpm/max_rpm exceeds the ratio; brief hold smooths rpm bounce.
     enable_rev_limiter: bool = True
     rev_limit_ratio: float = 0.93             # fraction of max_rpm to fire at
-    rev_limit_freq: int = 20
-    rev_limit_amp: int = 10
+    rev_limit_freq: int = 30                  # distinct from gravel/dirt drift (15/45 Hz)
+    rev_limit_amp: int = 20                   # stronger than any drift surface so the warning stands out
     rev_limit_hold_ms: float = 120.0          # min on-time per trigger
 
     # MARK: R2 wheelspin buzz
@@ -66,6 +66,17 @@ class Settings:
     # (water 0.5x, dirt 1.5x, gravel 2x). Surface freqs are fixed in code.
     enable_wheelspin_buzz: bool = True
     wheelspin_amp: int = 3
+
+    # MARK: R2 idle buzz
+    # Engine-idle oscillation while stopped and accelerator pressed under ~25%.
+    # Single chug pattern: vibrate amp toggles between low and high every half-period.
+    enable_idle_buzz: bool = True
+    idle_max_speed_kmh: float = 5.0           # only while car is essentially stopped
+    idle_accel_max: int = 64                  # upper byte (~25% of 255): idle fades out past this press
+    idle_freq: int = 30                       # base vibrate Hz
+    idle_amp_low: int = 1                     # quiet half of the cycle
+    idle_amp_high: int = 30                  # loud half of the cycle
+    idle_period_s: float = 0.5                # full cycle length (sec)
 
     # MARK: Gear shift
     # One short burst on up/downshift while moving.
