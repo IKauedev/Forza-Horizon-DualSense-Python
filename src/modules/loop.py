@@ -3,7 +3,7 @@ import logging
 import time
 
 from modules import dualsense, forzahorizon
-from modules.exit_detection import ProcessWatcher
+from modules.forzahorizon import ProcessWatcher
 
 log = logging.getLogger("fhds")
 

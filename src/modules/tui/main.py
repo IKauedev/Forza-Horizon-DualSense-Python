@@ -9,9 +9,10 @@ from textual.containers import Horizontal
 from textual.widgets import Button, Header, Input, Static, Switch, TabbedContent, TabPane
 
 from lang import set_language, t
-from modules import dualsense, loop, preferences, profiles, forzahorizon
+from modules import dualsense, loop, forzahorizon
+from modules.config import preferences, profiles
 from modules.dualsense.adaptive_trigger import off, vibrate
-from modules.preferences import _version
+from modules.config.preferences import _version
 
 from .controls_tab import ControlsTab
 from .lang_tab import LangTab

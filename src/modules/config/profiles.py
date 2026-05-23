@@ -6,7 +6,7 @@ holding references to a particular dict.
 """
 import logging
 
-from modules import preferences
+from . import preferences
 
 log = logging.getLogger("fhds")
 

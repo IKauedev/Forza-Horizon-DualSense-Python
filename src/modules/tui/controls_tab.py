@@ -6,7 +6,7 @@ from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.widgets import Label, Switch
 
 from lang import t
-from modules import preferences
+from modules.config import preferences
 
 log = logging.getLogger("fhds")
 

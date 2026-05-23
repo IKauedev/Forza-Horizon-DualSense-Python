@@ -10,8 +10,7 @@ load_dotenv("dev.env")
 
 
 from modules import dualsense, forzahorizon, setup_logging, loop
-from modules import preferences
-from modules.settings import Settings
+from modules.config import preferences, Settings
 
 log = logging.getLogger("fhds")
 

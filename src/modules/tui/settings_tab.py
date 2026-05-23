@@ -6,7 +6,7 @@ from textual.containers import Horizontal, VerticalScroll
 from textual.widgets import Button, Input, Label, Switch
 
 from lang import t
-from modules import preferences
+from modules.config import preferences
 from modules.tui.widgets import RangeSlider
 
 log = logging.getLogger("fhds")

@@ -6,7 +6,7 @@ from textual.containers import Horizontal, Vertical
 from textual.widgets import Button, Input, Label, ListItem, ListView, Static
 
 from lang import t
-from modules import preferences, profiles
+from modules.config import preferences, profiles
 
 log = logging.getLogger("fhds")
 

@@ -9,7 +9,7 @@ from textual.containers import VerticalScroll
 from textual.widgets import Label, ListItem, ListView, Static
 
 from lang import available, set_language, t
-from modules import preferences
+from modules.config import preferences
 
 log = logging.getLogger("fhds")
 

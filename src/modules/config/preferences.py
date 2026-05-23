@@ -20,9 +20,11 @@ from pathlib import Path
 
 log = logging.getLogger("fhds")
 
-_DATA = Path(__file__).resolve().parent.parent / "data"
+# __file__ now lives at modules/config/, so reach up three levels to src/.
+_SRC = Path(__file__).resolve().parent.parent.parent
+_DATA = _SRC / "data"
 PATH = _DATA / "user_preferences.json"
-PYPROJECT = Path(__file__).resolve().parent.parent / "pyproject.toml"
+PYPROJECT = _SRC / "pyproject.toml"
 DEFAULT_PROFILE_NAME = "Default"
 
 # System fields — shared across profiles and preserved across launches.
