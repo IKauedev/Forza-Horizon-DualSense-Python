@@ -217,7 +217,7 @@ class TriggerTUI(App):
         """Update the active profile label. Cheap path is called only on profile
         mutations / app mount — avoids hitting disk on the per-second timer."""
         try:
-            active = profiles.load_store().get("active") or t("(none)")
+            active = profiles.load_profiles().get("active") or t("(none)")
         except Exception:
             active = t("(none)")
         self.query_one("#profile", Static).update(t("Profile: {name}").format(name=active))

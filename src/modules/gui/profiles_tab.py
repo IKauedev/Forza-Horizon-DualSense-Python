@@ -19,6 +19,7 @@ class ProfilesTab(ctk.CTkFrame):
         self.app = app
         self.settings = app.settings
         self._names: list[str] = []
+        self._share_entry: ctk.CTkEntry | None = None
         self._build()
         self._refresh_list()
 
@@ -90,16 +91,37 @@ class ProfilesTab(ctk.CTkFrame):
                wrap=self.app.px(320)
                ).pack(fill="x", padx=T.PAD_MD, pady=(0, T.PAD_MD))
 
+        # --- Share card (spans full width) ---------------------------------
+        share = W.Card(self)
+        share.pack(fill="x", pady=(T.PAD_MD, 0))
+        W.H2(share, t("Share profile")).pack(
+            anchor="w", padx=T.PAD_MD, pady=(T.PAD_MD, T.PAD_XS))
+        W.Hint(share,
+               t("Export the selected profile as a short code (copied to your "
+                 "clipboard), or paste a code below and import it."),
+               wrap=self.app.px(640),
+               ).pack(anchor="w", padx=T.PAD_MD, pady=(0, T.PAD_SM))
+
+        self._share_entry = ctk.CTkEntry(share, placeholder_text="FHDS:...")
+        self._share_entry.pack(fill="x", padx=T.PAD_MD, pady=(0, T.PAD_SM))
+
+        row = ctk.CTkFrame(share, fg_color="transparent")
+        row.pack(fill="x", padx=T.PAD_MD, pady=(0, T.PAD_MD))
+        W.PrimaryButton(row, t("Export & Copy"), self._on_export
+                        ).pack(side="left", padx=(0, T.PAD_XS))
+        W.PrimaryButton(row, t("Import"), self._on_import
+                        ).pack(side="left", padx=T.PAD_XS)
+
     # MARK: list helpers ----------------------------------------------------
 
     def _refresh_list(self):
-        store = profiles.load_store()
+        store = profiles.load_profiles()
         active = store.get("active", "")
         self.lbl_active.configure(
             text=t("Active: {name}").format(name=active or t("(none)"))
         )
         self.listbox.delete(0, "end")
-        names = profiles.list_names(store)
+        names = profiles.list_profile_names(store)
         for name in names:
             label = f"{name}   ({t('active')})" if name == active else name
             self.listbox.insert("end", label)
@@ -129,7 +151,7 @@ class ProfilesTab(ctk.CTkFrame):
         if not name:
             log.warning("Profile name is empty.")
             return
-        final = profiles.save_as(name, self.settings)
+        final = profiles.save_profile(name, self.settings)
         self.entry_name.delete(0, "end")
         self._refresh_list()
         if final and final != name:
@@ -142,7 +164,7 @@ class ProfilesTab(ctk.CTkFrame):
         if not name:
             log.warning("No profile selected.")
             return
-        if profiles.apply(name, self.settings):
+        if profiles.apply_profile(name, self.settings):
             self.app.refresh_setting_widgets()
             self._refresh_list()
             log.info("Loaded profile: %s", name)
@@ -155,7 +177,7 @@ class ProfilesTab(ctk.CTkFrame):
         if name == preferences.DEFAULT_PROFILE_NAME:
             log.warning("Default profile cannot be deleted.")
             return
-        if profiles.delete(name):
+        if profiles.delete_profile(name):
             self._refresh_list()
             log.info("Deleted profile: %s", name)
 
@@ -171,7 +193,7 @@ class ProfilesTab(ctk.CTkFrame):
         if not new:
             log.warning("Type the new name in the name field first.")
             return
-        final = profiles.rename(old, new)
+        final = profiles.rename_profile(old, new)
         if not final:
             log.warning("Rename failed.")
             return
@@ -181,3 +203,42 @@ class ProfilesTab(ctk.CTkFrame):
             log.info("Renamed profile: %s -> %s (name taken)", old, final)
         else:
             log.info("Renamed profile: %s -> %s", old, final)
+
+    # MARK: share -----------------------------------------------------------
+
+    def _on_export(self):
+        name = self._selected_name()
+        if not name:
+            self.app.toast(t("No profile selected."))
+            return
+        code = profiles.export_profile(name)
+        if not code:
+            self.app.toast(t("Export failed."))
+            return
+        if self._share_entry is not None:
+            self._share_entry.delete(0, "end")
+            self._share_entry.insert(0, code)
+        try:
+            self.app.root.clipboard_clear()
+            self.app.root.clipboard_append(code)
+            self.app.root.update()
+            self.app.toast(t("Copied {name} to clipboard.").format(name=name))
+        except tk.TclError:
+            self.app.toast(t("Copy failed. Select the code and copy manually."))
+        log.info("Exported profile %s (%d chars)", name, len(code))
+
+    def _on_import(self):
+        if self._share_entry is None:
+            return
+        code = self._share_entry.get().strip()
+        if not code:
+            self.app.toast(t("Paste a code first."))
+            return
+        final = profiles.import_profile(code)
+        if not final:
+            self.app.toast(t("Invalid share code."))
+            return
+        self._share_entry.delete(0, "end")
+        self._refresh_list()
+        self.app.toast(t("Imported as {name}.").format(name=final))
+        log.info("Imported profile as %s", final)

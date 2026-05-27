@@ -164,6 +164,30 @@ class TriggerGUI:
     def font_size(self, base: int) -> int:
         return max(8, int(round(base * self.scale)))
 
+    def toast(self, message: str, ms: int = 2500):
+        """Show a transient banner at the top of the window. Cross-platform."""
+        top = ctk.CTkToplevel(self.root)
+        top.overrideredirect(True)
+        try:
+            top.attributes("-topmost", True)
+            top.attributes("-alpha", 0.95)
+        except tk.TclError:
+            pass
+        lbl = ctk.CTkLabel(
+            top, text=message,
+            fg_color=T.ACCENT, text_color="white",
+            corner_radius=8,
+            font=ctk.CTkFont(size=T.FS_BODY, weight="bold"),
+        )
+        lbl.pack(ipadx=18, ipady=10)
+        top.update_idletasks()
+        rx = self.root.winfo_rootx()
+        ry = self.root.winfo_rooty()
+        rw = self.root.winfo_width()
+        tw = top.winfo_width()
+        top.geometry(f"+{rx + (rw - tw) // 2}+{ry + 24}")
+        top.after(ms, top.destroy)
+
     def _set_window_icon(self):
         from modules.config import paths
         ico = paths.ICON_ICO
@@ -473,7 +497,7 @@ class TriggerGUI:
 
     def _refresh_profile(self):
         try:
-            active = profiles.load_store().get("active") or t("(none)")
+            active = profiles.load_profiles().get("active") or t("(none)")
         except Exception:
             active = t("(none)")
         self.profile_pill.set_label(active)

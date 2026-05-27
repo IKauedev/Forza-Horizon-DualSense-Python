@@ -111,4 +111,4 @@ if __name__ == "__main__":
     elif getattr(sys, "frozen", False):
         run_gui(settings)
     else:
-        run_tui(settings)
+        run_gui(settings)
