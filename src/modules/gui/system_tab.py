@@ -199,7 +199,7 @@ class SystemTab(SettingsTab):
     # MARK: updates ---------------------------------------------------------
 
     def _on_update_toggle(self):
-        if self._update_switch is None or self.app._refreshing:
+        if self._update_switch is None:
             return
         value = bool(self._update_switch.get())
         if self.settings.check_for_updates != value:
