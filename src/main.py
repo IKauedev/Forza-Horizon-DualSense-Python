@@ -5,7 +5,7 @@ import sys
 import traceback
 from datetime import datetime
 from dotenv import load_dotenv
-load_dotenv("./data/dev.env")
+load_dotenv("./dev.env")
 
 
 from modules import dualsense, forzahorizon, setup_logging, loop
