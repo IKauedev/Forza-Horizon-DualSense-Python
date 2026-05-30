@@ -142,7 +142,7 @@ class TriggerAnimations:
     def abs_pulse(self, t, s):
         if not s.enable_abs:
             return None
-        if t["brake"] < s.abs_brake_threshold or t["speed"] < s.abs_min_speed_kmh:
+        if t["brake"] < max(1, s.abs_brake_threshold) or t["speed"] < s.abs_min_speed_kmh:
             return None
         if (_max_slip(t, "tire_slip_ratio") < s.abs_slip_ratio_threshold
                 and _max_slip(t, "tire_combined_slip") < s.abs_combined_slip_threshold):
