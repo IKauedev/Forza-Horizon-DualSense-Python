@@ -19,7 +19,7 @@ CRASH_LOG = paths.DATA / "crash.log"
 
 def _excepthook(exc_type, exc, tb):
     if issubclass(exc_type, KeyboardInterrupt):
-        sys.__excepthook__(exc_type, exc, tb)
+        print("\nInterrupted.", file=sys.stderr)
         return
     try:
         paths.DATA.mkdir(parents=True, exist_ok=True)
@@ -97,14 +97,17 @@ if __name__ == "__main__":
 
     _log_zuv_status()
 
-    if args.headless:
-        setup_logging(args.debug)
-        run(settings)
-    elif args.tui:
-        run_tui(settings)
-    elif args.gui:
-        run_gui(settings)
-    elif getattr(sys, "frozen", False):
-        run_gui(settings)
-    else:
-        run_gui(settings)
+    try:
+        if args.headless:
+            setup_logging(args.debug)
+            run(settings)
+        elif args.tui:
+            run_tui(settings)
+        elif args.gui:
+            run_gui(settings)
+        elif getattr(sys, "frozen", False):
+            run_gui(settings)
+        else:
+            run_gui(settings)
+    except KeyboardInterrupt:
+        print("\nInterrupted.", file=sys.stderr)

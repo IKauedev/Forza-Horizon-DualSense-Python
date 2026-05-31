@@ -20,7 +20,7 @@ class Settings:
     # Rigid curve: 0..wall_engage_at maps baseline..max_force, then firmware wall at 100%.
     enable_brake_resistance: bool = True
     brake_deadzone: int = 50                  # ignore pedal below this byte
-    brake_baseline_force: int = 15            # force at deadzone exit
+    brake_baseline_force: int = 18            # force at deadzone exit
     brake_max_force: int = 80                 # peak force just before the wall
     brake_curve: float = 5.0                  # parabolic exponent; higher = softer mid, harder near wall
     brake_wall_engage_at: int = 250           # byte that triggers firmware wall. DO NOT CHANGE
