@@ -112,7 +112,7 @@ class Settings:
     dsx_port: int = 6969                      # match the port in DSX settings
 
     # MARK: System - language
-    # Module name in `lang/` (en, tr, zh, ja). Unknown codes fall back to English.
+    # Module name in `lang/` (en, tr, zh, zh_tw, ja). Unknown codes fall back to English.
     language: str = "en"
 
     # MARK: System - auto exit
